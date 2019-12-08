@@ -617,6 +617,26 @@ Here we can see each Lambda gets in input of each row
 
 ![Map Item](./saved-steps/img/05-map-item.png "Map Item")
 
+The lambda prints the details on one line
+
+```javascript
+'use strict';
+
+module.exports.handler = (event, context, callback) => {
+
+  console.log(JSON.stringify(event));
+  console.log(JSON.stringify(context));
+
+  var result = {
+    ID : event.id,
+    Name : event.name,
+    Quantity : event.quantity
+  };
+  callback(null, "Processing Item " + result.ID + " " + result.Name + " " + result.Quantity);
+
+};
+```
+
 and the output is a line of text `"Processing Item 45678 llama sticks 4"`
 
 These are added to the state in an array in `"taskresult": []`
@@ -666,7 +686,7 @@ These are added to the state in an array in `"taskresult": []`
 
 ## Map Features : iw102MapMachine
 
-In this example we want fields that are outside of the array to be included in each lambda call, consider this input
+In this example we want fields that are outside of the array to be included in each lambda call, consider this input we have added some data at the basket level `platform` and `ordernumber`
 
 ```json
 {
@@ -733,7 +753,7 @@ Then deploy
 sls deploy --verbose stage=dev
 ```
 
-Now lets start a `new execution` with a similar payload as the previous example
+Now lets start a `new execution` with a similar payload as the previous example we have added some data at the basket level `platform` and `ordernumber`
 
 ```json
 {
@@ -752,23 +772,38 @@ Now lets start a `new execution` with a similar payload as the previous example
 }
 ```
 
-The new Lambda `processItem` parses the request to a structure
+The new Lambda `processItem` has access to the event
 
-
-```go
-// Item an event to hold an Item
-type Item struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Quantity int    `json:"quantity"`
+```json
+{
+    "item": {
+        "id": "12345",
+        "name": "fish sticks",
+        "quantity": 1
+    },
+    "ordernumber": 6875675878,
+    "platform": "WEB"
 }
+```
 
-// ItemEvent an event to hold the whole object
-type ItemEvent struct {
-	Item        Item
-	Platform    string `json:"platform"`
-	Ordernumber int    `json:"ordernumber"`
-}
+It now has the data it needs to produce the desired output
+
+```javascript
+'use strict';
+
+module.exports.handler = (event, context, callback) => {
+
+  console.log(JSON.stringify(event));
+  console.log(JSON.stringify(context));
+
+  var result = {
+    ID : event.item.id,
+    Name : event.item.name,
+    Quantity : event.item.quantity
+  };
+  callback(null, "Processing Item " + event.platform + " " + event.ordernumber + " " + result.ID + " " + result.Name + " " + result.Quantity);
+
+};
 ```
 
 And now includes data outside of the array in its input and output
@@ -886,29 +921,35 @@ sls deploy --verbose stage=dev
 we should now lets start an execution
 
 ```bash
-openssl s_client llb348ist9.execute-api.eu-west-1.amazonaws.com:443
+openssl s_client xl8creq0kf.execute-api.eu-west-1.amazonaws.com:443
 ```
 
 Then paste in
 
 ```bash
 GET /dev/action/start HTTP/1.1
-host: llb348ist9.execute-api.eu-west-1.amazonaws.com
+host: xl8creq0kf.execute-api.eu-west-1.amazonaws.com
 X-API-Key: s1HR9a43llolcatslikeiamdoingthat7YEIvns8
 connection: close
 
 ```
 
-As each event gets fired, the `monitor lambda` will get called <https://eu-west-1.console.aws.amazon.com/lambda/home?region=eu-west-1#/functions/iw-102stepfunctions-dev-monitor>
+As each event gets fired, the `monitor lambda` will get called <https://eu-west-1.console.aws.amazon.com/lambda/home?region=eu-west-1#/functions/iw-102-stepfunctions-nodejs-dev-monitor>
 
 This lambda simply writes out to cloudwatch.
 
-```go
-// HandleRequest the method that recieves the step call
-func HandleRequest(ctx context.Context, cwEvent events.CloudWatchEvent) (string, error) {
-	fmt.Printf("Processing Item (logged to cloudwatch) %v ", string(cwEvent.Detail))
-	return fmt.Sprintf("Processing Item %v ", string(cwEvent.Detail)), nil
-}
+```javascript
+'use strict';
+
+module.exports.handler = (event, context, callback) => {
+
+  console.log(JSON.stringify(event));
+  console.log(JSON.stringify(context));
+
+  callback(null, event.Detail);
+
+};
+
 ```
 
 If you view the `Monitoring` tab, and click `view logs in CloudWatch` and choose the latest Log Stream; you can see the lambda recieving the events.
