@@ -1,4 +1,4 @@
-service: iw-101-stepfunctions-nodejs 
+service: iw-102-stepfunctions-nodejs 
 
 provider:
   name: aws

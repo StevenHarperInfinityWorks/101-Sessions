@@ -22,18 +22,18 @@ plugins:
   - serverless-step-functions
 
 functions:
-  hello:
-    handler: hello.handler
-    description: A Lambda that says hello
+  sendWait:
+    handler: sendwait.handler
+    description: A Lambda that recieves the wait Token to share
     memorySize: 128
     timeout: 2
 
 stepFunctions:
   stateMachines:
-    iw102StarterMachine:
+    iw102CallbackMachine:
       events:
         - http:
-            path: hello
+            path: action/start
             method: GET
             private: true
         - http:
@@ -50,21 +50,41 @@ stepFunctions:
             method: POST
             action: StopExecution
             private: true
+
       definition:
-        Comment: "A sample step function to say hello"
+        Comment: "A sample step function to wait for a callback"
         StartAt: FirstState
         States:
+
           FirstState:
             Type: Wait
             Seconds: 5
-            Next: SecondState
-          SecondState:
+            Next: SendWait
+
+          SendWait:
             Type: Task
-            Resource:
-              Fn::GetAtt: [hello, Arn]
-            Next: ThirdState
+            Resource: "arn:aws:states:::lambda:invoke.waitForTaskToken"
+            HeartbeatSeconds: 60
+            Parameters:
+              FunctionName: iw-102-stepfunctions-nodejs-${opt:stage, self:provider.stage}-sendWait
+              Payload: 
+                message: "Please use this token to wake up this Step Function Execution"
+                token.$: "$$.Task.Token"
+            Catch:
+            - ErrorEquals:
+              - States.Timeout
+              Next : TimeoutState
+            - ErrorEquals:
+              - States.TaskFailed
+              Next : FailState
+            Next: SuccessState
             ResultPath: "$.taskresult"
-          ThirdState:
-            Type: Wait
-            Seconds: 5
-            End: true
+
+          SuccessState:
+            Type: Succeed
+
+          TimeoutState:
+            Type: Succeed
+
+          FailState:
+            Type: Fail

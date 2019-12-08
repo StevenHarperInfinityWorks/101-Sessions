@@ -303,7 +303,7 @@ Via: 1.1 b2c5bb2dfa91176e0d4f75ea11ff9bcc.cloudfront.net (CloudFront)
 X-Amz-Cf-Pop: LHR3-C1
 X-Amz-Cf-Id: TBbTeRs0KKU37Gx4L-6U0CeSpWdjQkgWthlhuiHIyXy1S6OfPtguMA==
 
-{"executionArn":"arn:aws:states:eu-west-1:386676700885:execution:Iw102StarterMachineStepFunctionsStateMachine-m97rVvc6mLUI:665de460-0406-4a9e-9cf4-f71b242bd23f","startDate":1.575839018359E9}closed
+{"executionArn":"arn:aws:states:eu-west-1:000000000000:execution:Iw102StarterMachineStepFunctionsStateMachine-m97rVvc6mLUI:665de460-0406-4a9e-9cf4-f71b242bd23f","startDate":1.575839018359E9}closed
 ```
 
 ## Callback State Machine : iw102CallbackMachine
@@ -375,7 +375,7 @@ Once one of these is waiting the result can be :
 We can now hit the API to start one of the executions
 
 ```bash
-openssl s_client llb348ist9.execute-api.eu-west-1.amazonaws.com:443
+openssl s_client xl8creq0kf.execute-api.eu-west-1.amazonaws.com:443
 ```
 
 Then paste in
@@ -383,7 +383,7 @@ Then paste in
 
 ```bash
 GET /dev/action/start HTTP/1.1
-host: llb348ist9.execute-api.eu-west-1.amazonaws.com
+host: xl8creq0kf.execute-api.eu-west-1.amazonaws.com
 X-API-Key: s1HR9a43llolcatslikeiamdoingthat7YEIvns8
 connection: close
 
@@ -393,35 +393,30 @@ An Execution should now be running, and if you look at the execution, you should
 
 ![Callback Running](./saved-steps/img/04-callback-machine-running.png "Callback Running")
 
-If you see the `sendWait Lambda` <https://eu-west-1.console.aws.amazon.com/lambda/home?region=eu-west-1#/functions/iw-102stepfunctions-dev-sendWait?> it recieves the token and writes it to log (Cloudwatch)
+If you see the `sendWait Lambda` <https://eu-west-1.console.aws.amazon.com/lambda/home?region=eu-west-1#/functions/iw-102-stepfunctions-nodejs-dev-sendWait?tab=monitoring> it recieves the token and writes it to log (Cloudwatch)
 
 ![Callback Lambda](./saved-steps/img/04-callback-lambda.png "Callback Lambda")
 
-```go
-package main
+```javascript
+'use strict';
 
-import (
-	"context"
-	"fmt"
+module.exports.handler = (event, context, callback) => {
 
-	"github.com/aws/aws-lambda-go/lambda"
-)
+  var comment = event.Comment;
 
-// WaitEvent an event to make the token accessible
-type WaitEvent struct {
-	Token string `json:"token"`
-}
+  console.log(JSON.stringify(event));
+  console.log(JSON.stringify(context));
 
-// HandleRequest the method that recieves the step call
-func HandleRequest(ctx context.Context, waitEvent WaitEvent) (string, error) {
-	fmt.Printf("Waiting for token (logged to cloudwatch) %v", waitEvent.Token)
-	// This could email out this token as a URL to click on in an Email.
-	return fmt.Sprintf("Waiting for token %v", waitEvent.Token), nil
-}
+  var result = {
+    token : event.token,
+    memory : context.memoryLimitInMB,
+    functionName : context.functionName,
+    invokeId : context.invokeid
+  };
+  callback(null, result);
 
-func main() {
-	lambda.Start(HandleRequest)
-}
+};
+
 ```
 
 You can click in the `Monitoring` tab in the Lambda and then click the `View logs in CloudWatch` button.
@@ -467,14 +462,14 @@ sls deploy --verbose stage=dev
 Great, now lets start another execution
 
 ```bash
-openssl s_client llb348ist9.execute-api.eu-west-1.amazonaws.com:443
+openssl s_client xl8creq0kf.execute-api.eu-west-1.amazonaws.com:443
 ```
 
 Then paste in
 
 ```bash
 GET /dev/action/start HTTP/1.1
-host: llb348ist9.execute-api.eu-west-1.amazonaws.com
+host: xl8creq0kf.execute-api.eu-west-1.amazonaws.com
 X-API-Key: s1HR9a43llolcatslikeiamdoingthat7YEIvns8
 connection: close
 
@@ -509,14 +504,14 @@ Now lets start another execution to test `FAILURES`
 > Note : Your `host` & `x-api-key` will be different - update it in the 3 places
 
 ```bash
-openssl s_client llb348ist9.execute-api.eu-west-1.amazonaws.com:443
+openssl s_client xl8creq0kf.execute-api.eu-west-1.amazonaws.com:443
 ```
 
 Then paste in
 
 ```bash
 GET /dev/action/start HTTP/1.1
-host: llb348ist9.execute-api.eu-west-1.amazonaws.com
+host: xl8creq0kf.execute-api.eu-west-1.amazonaws.com
 X-API-Key: s1HR9a43llolcatslikeiamdoingthat7YEIvns8
 connection: close
 
