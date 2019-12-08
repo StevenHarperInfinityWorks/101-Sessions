@@ -980,8 +980,10 @@ sls remove -STAGE=DEV
 
 <https://docs.aws.amazon.com/step-functions/latest/dg/sample-map-state.html>
 
-<https://docs.aws.amazon.com/lambda/latest/dg/go-programming-model-logging.html>
-
 <https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html>
 
 <https://serverless.com/plugins/serverless-step-functions/>
+
+https://aws.amazon.com/getting-started/tutorials/create-a-serverless-workflow-step-functions-lambda/
+
+https://docs.aws.amazon.com/step-functions/latest/dg/tutorial-handling-error-conditions.html
