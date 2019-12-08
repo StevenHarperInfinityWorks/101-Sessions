@@ -12,7 +12,7 @@ plugins:
 
 functions:
   hello:
-    handler: handler.hello
+    handler: hello.handler
     description: A Lambda that says hello
     memorySize: 128
     timeout: 2

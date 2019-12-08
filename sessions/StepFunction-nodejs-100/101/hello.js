@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports.hello = async (event, context, callback) => {
+module.exports.handler = (event, context, callback) => {
 
   var comment = event.Comment;
 

@@ -245,12 +245,12 @@ Great - lets run one, click the `execute button` and just leave the defaults and
 
 Ok, great now lets do something useful : lets store some information in state
 
-Lets modify the [./handler.js](./handler.js) file to make it work with step function events.
+Lets rename the handler.js to [./hello.js](./hello.js) file to make it work with step function events.
 
 ```javascript
 'use strict';
 
-module.exports.hello = async (event, context, callback) => {
+module.exports.handler = (event, context, callback) => {
 
   var comment = event.Comment;
 
@@ -328,43 +328,72 @@ Great it outputted
 }
 ```
 
+If we check the cloudwatch logs, then we can see the 2 `Console.log` items
+
+Event
+
+```json
+{
+    "Comment": "Insert your JSON here"
+}
+```
+
+Context
+
+```json
+{
+    "callbackWaitsForEmptyEventLoop": true,
+    "logGroupName": "/aws/lambda/iw-101-stepfunctions-nodejs-dev-hello",
+    "logStreamName": "2019/12/08/[$LATEST]8eda7350ce124b1a945cf3e909a31a00",
+    "functionName": "iw-101-stepfunctions-nodejs-dev-hello",
+    "memoryLimitInMB": "128",
+    "functionVersion": "$LATEST",
+    "invokeid": "f1f6ccc2-e58c-4603-b155-5420368d608e",
+    "awsRequestId": "f1f6ccc2-e58c-4603-b155-5420368d608e",
+    "invokedFunctionArn": "arn:aws:lambda:eu-west-1:REDACTED:function:iw-101-stepfunctions-nodejs-dev-hello"
+}
+```
+
 ## Next Step Function : 101FlakeyMachine
-
-**WIP**
-
-<https://aws.amazon.com/getting-started/tutorials/create-a-serverless-workflow-step-functions-lambda/>
 
 Now lets see how we can deal with errors - retry, backoff, and failures
 
 This `serverless.yml` is the next example [./saved-steps/serverless-04-101-flakey-machine.yml](./saved-steps/serverless-04-101-flakey-machine.yml) 
 
-It uses the [./hello/flakey.go](./hello/flakey.go) file.
+It uses the [./flakey.js](./flakey.js) file.
 
 In this file, the main function will generate random failures, see the custom error?
 
-```golang
-	rand.Seed(time.Now().UnixNano())
-	numb := rand.Intn(100)
+```javascript
+'use strict';
 
-	if numb < 51 {
-		return "", errors.New("something went wrong")
-	}
-	if numb < 91 {
-		return "", &CustomError{}
-	}
-	return fmt.Sprintf("Super Happy Success"), nil
+module.exports.handler = (event, context, callback) => {
+
+  function CustomError(message) {
+    this.name = 'CustomError';
+    this.message = message;
+  }
+  CustomError.prototype = new Error();
+
+  var min = 1;
+  var max = 100;    
+  var randomNumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+  console.log("generatedRandom : " + randomNumber);
+
+  if (randomNumber < 51) {
+    callback(new CustomError('bad stuff happened...'));
+  }
+  if (randomNumber < 91) {
+    callback(new Error('something went wrong'));
+  }
+  callback(null, "Super Happy Success");
+
+};
 ```
 
 The custom error lets you have different control in your step function, depending on what error occured
 
-```golang
-// CustomError smaple error
-type CustomError struct{}
-
-func (e *CustomError) Error() string {
-	return "bad stuff happened..."
-}
-```
 The errors can be trapped, and retry the lambda.
 Retries, can be instructed to back-off (leave longer gaps), if they continue to fail.
 
@@ -417,7 +446,35 @@ And one that succeeded
 
 ![alt Success](./saved-steps/img/04-flakey-success.png "Success")
 
-The Successful execution still needed a few retries
+The successful execution still needed a few retries and had errors
+
+```json
+{
+  "error": "CustomError",
+  "cause": {
+    "errorMessage": "bad stuff happened...",
+    "errorType": "CustomError",
+    "stackTrace": [
+      "module.exports.handler (/var/task/flakey.js:9:27)"
+    ]
+  }
+}
+```
+
+and
+
+```json
+{
+  "error": "Error",
+  "cause": {
+    "errorMessage": "something went wrong",
+    "errorType": "Error",
+    "stackTrace": [
+      "module.exports.handler (/var/task/flakey.js:21:14)"
+    ]
+  }
+}
+```
 
 ![alt Log](./saved-steps/img/04-flakey-log.png "Log")
 
