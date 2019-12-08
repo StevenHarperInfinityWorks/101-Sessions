@@ -360,6 +360,8 @@ Now lets see how we can deal with errors - retry, backoff, and failures
 
 This `serverless.yml` is the next example [./saved-steps/serverless-04-101-flakey-machine.yml](./saved-steps/serverless-04-101-flakey-machine.yml) 
 
+![alt flakey-state-machine](./saved-steps/img/04-flakey-state-machine.png "flakey-state-machine")
+
 It uses the [./flakey.js](./flakey.js) file.
 
 In this file, the main function will generate random failures, see the custom error?
