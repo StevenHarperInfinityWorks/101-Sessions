@@ -248,15 +248,15 @@ Now we can see that the output generates a key that is needed to call the servic
 ```bash
 Serverless: Stack update finished...
 Service Information
-service: iw-102stepfunctions
+service: iw-101-stepfunctions-nodejs
 stage: dev
 region: eu-west-1
-stack: iw-102stepfunctions-dev
+stack: iw-101-stepfunctions-nodejs-dev
 api keys:
   dev-myFirstKey: s1HR9a43llolcatslikeiamdoingthat7YEIvns8
 endpoints:
 functions:
-  hello: iw-102stepfunctions-dev-hello
+  hello: iw-102stepfunctions-nodejs-dev-hello
 layers:
   None
 ```
@@ -275,14 +275,14 @@ You can now see that the API calls require keys, if you try without you get
 Test it - open an ssl connection
 
 ```bash
-openssl s_client llb348ist9.execute-api.eu-west-1.amazonaws.com:443
+openssl s_client pob8gjvqu3.execute-api.eu-west-1.amazonaws.com:443
 ```
 
 Send a Request
 
 ```bash
 GET /dev/hello HTTP/1.1
-host: llb348ist9.execute-api.eu-west-1.amazonaws.com
+host: pob8gjvqu3.execute-api.eu-west-1.amazonaws.com
 X-API-Key: s1HR9a43llolcatslikeiamdoingthat7YEIvns8
 connection: close
 ```
@@ -294,16 +294,16 @@ HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 190
 Connection: close
-Date: Tue, 12 Nov 2019 15:40:09 GMT
-x-amzn-RequestId: 9c3d8aab-83bf-4542-8256-36c9f42b6b01
-x-amz-apigw-id: DDXN9HNcDoEF8oA=
-X-Amzn-Trace-Id: Root=1-5dcad259-760ded2caa731b642837fea4
+Date: Sun, 08 Dec 2019 21:03:38 GMT
+x-amzn-RequestId: 665de460-0406-4a9e-9cf4-f71b242bd23f
+x-amz-apigw-id: EZy-nH0ujoEFnFw=
+X-Amzn-Trace-Id: Root=1-5ded652a-659a0ea2a46a820edf87d640
 X-Cache: Miss from cloudfront
-Via: 1.1 f79355bad214d64e02ae8e84a86f4933.cloudfront.net (CloudFront)
-X-Amz-Cf-Pop: LHR61-C2
-X-Amz-Cf-Id: 6N0AqES_u1GsNM4dzd5ZHITISEfqxCjX2qoVgCw6nwYTjnz5ZTZHiA==
+Via: 1.1 b2c5bb2dfa91176e0d4f75ea11ff9bcc.cloudfront.net (CloudFront)
+X-Amz-Cf-Pop: LHR3-C1
+X-Amz-Cf-Id: TBbTeRs0KKU37Gx4L-6U0CeSpWdjQkgWthlhuiHIyXy1S6OfPtguMA==
 
-{"executionArn":"arn:aws:states:eu-west-1:386676700885:execution:Iw102StarterMachineStepFunctionsStateMachine-YBD4dm89PhcK:9c3d8aab-83bf-4542-8256-36c9f42b6b01","startDate":1.573573209347E9}closed
+{"executionArn":"arn:aws:states:eu-west-1:386676700885:execution:Iw102StarterMachineStepFunctionsStateMachine-m97rVvc6mLUI:665de460-0406-4a9e-9cf4-f71b242bd23f","startDate":1.575839018359E9}closed
 ```
 
 ## Callback State Machine : iw102CallbackMachine
