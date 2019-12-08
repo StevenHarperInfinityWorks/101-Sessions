@@ -1,4 +1,4 @@
-# 101 Step Functions - Infinity Works
+# 101 Step Functions Nodejs - Infinity Works
 
 This is the 101 on Step Functions, this course will introduce you to step functions and some of the features that make them so great.
 
