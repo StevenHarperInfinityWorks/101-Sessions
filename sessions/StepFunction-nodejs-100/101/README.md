@@ -429,7 +429,7 @@ Once it runs out of retries, the Catch is activated.  This leads is to a `Type :
 Lets deploy this to give it a go.
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 So that worked : lets test it with a few dummy events
@@ -490,7 +490,7 @@ This `serverless.yml` is the next example [./saved-steps/serverless-05-101-paral
 
 This machine will use the `Type : Parallel` to run Steps in Parallel.
 
-![alt Parallel Machine Ready](./saved-steps/img/05-parallel-machine-ready.png "Paralell Machine Ready")
+![alt Parallel Machine Ready](./saved-steps/img/05-parallel-machine-ready.png "Parallel Machine Ready")
 
 The `Branches:` part is where it starts, each branch is executed and follows through the steps defined in the the `inner States`.
 Each branch finishes with it's own `End: true`
@@ -528,7 +528,7 @@ export SLS_DEBUG=*
 And deploy it.
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 Now lets run one!
@@ -540,7 +540,7 @@ Now lets run one!
 Have you spotted that the Lambda ARNs have a number at the end of them - part of the `deploy` output :
 
 ```bash
-HelloLambdaFunctionQualifiedArn: arn:aws:lambda:eu-west-1:386676700885:function:iw-101stepfunctions-dev-hello:5
+HelloLambdaFunctionQualifiedArn: arn:aws:lambda:eu-west-1:REDACTED:function:iw-101stepfunctions-dev-hello:5
 ```
 
 >the `:5` indicated the version number of the Lambda, note that eventually you will run capacity in the region due to the number of versions
@@ -552,7 +552,7 @@ To fix this, we can disable version creation using `versionFunctions: false`
 ```yml
 provider:
   name: aws
-  runtime: go1.x
+  runtime: nodejs8.10
   stage: dev
   region: eu-west-1
   profile: 101profile
@@ -606,7 +606,7 @@ There is an `Array` of choice Rules that run in order, in this example we use `N
 Lets deploy it out
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 This is how it is rendered.
