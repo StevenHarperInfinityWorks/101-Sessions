@@ -80,7 +80,7 @@ Now we deploy the step function:
 
 ```bash
 npm install
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 > You can Invoke a step function from the CLI
@@ -94,13 +94,15 @@ This runs the stepfunction synchronously
 ```bash
 { executionArn: 'arn:aws:states:eu-west-1:000000000000:execution:Iw102StarterMachineStepFunctionsStateMachine-C8ZYXzFB9SCO:0e0eac81-ce53-4db5-aa86-86e92efdeed7',
   stateMachineArn: 'arn:aws:states:eu-west-1:000000000000:stateMachine:Iw102StarterMachineStepFunctionsStateMachine-C8ZYXzFB9SCO',
-  name: '0e0eac81-ce53-4db5-aa86-86e92efdeed7',
+  name: 'd29a9793-ba62-4406-bc9f-49e5ec0f2c7e',
   status: 'SUCCEEDED',
-  startDate: 2019-11-12T11:39:26.081Z,
-  stopDate: 2019-11-12T11:39:36.397Z,
+  startDate: 2019-12-08T20:45:38.363Z,
+  stopDate: 2019-12-08T20:45:48.662Z,
   input: '{"thekey":"thevalue"}',
-  output: '{"thekey":"thevalue","taskresult":"Hello 102 Class"}' }
+  output: '{"thekey":"thevalue","taskresult":{"message":"Hello 101 Class undefined","memory":"128","functionName":"iw-101-stepfunctions-nodejs-dev-hello","invokeId":"cc5185ca-394d-4e63-b517-698673704319"}}' }
 ```
+
+![alt Starter Success](./saved-steps/img/01-starter-success.png "Starter Success")
 
 ## Add APIs to Step Machine : iw102StarterMachine
 
@@ -139,18 +141,18 @@ stepFunctions:
 Run out the changes
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 We can see that api endpoints get created
 
 ```yml
-Serverless StepFunctions Outputs
+Serverless StepFunctions OutPuts
 endpoints:
-  GET - https://iev7deoka1.execute-api.eu-west-1.amazonaws.com/dev/hello
-  POST - https://iev7deoka1.execute-api.eu-west-1.amazonaws.com/dev/action/start
-  POST - https://iev7deoka1.execute-api.eu-west-1.amazonaws.com/dev/action/status
-  POST - https://iev7deoka1.execute-api.eu-west-1.amazonaws.com/dev/action/stop
+  GET - https://pob8gjvqu3.execute-api.eu-west-1.amazonaws.com/dev/hello
+  POST - https://pob8gjvqu3.execute-api.eu-west-1.amazonaws.com/dev/action/start
+  POST - https://pob8gjvqu3.execute-api.eu-west-1.amazonaws.com/dev/action/status
+  POST - https://pob8gjvqu3.execute-api.eu-west-1.amazonaws.com/dev/action/stop
 ```
 
 These can be seen in the console <https://eu-west-1.console.aws.amazon.com/apigateway/home?region=eu-west-1>
@@ -159,17 +161,23 @@ These can be seen in the console <https://eu-west-1.console.aws.amazon.com/apiga
 
 You can click `Test` and send a Request Body
 
+```json
+{
+  "test1" : "test2"
+}
+```
+
 ![alt API Gateway test post](./saved-steps/img/02-apigw-test.png "API Gateway test post")
 
 This will `asynchronosly` start a step function execution, you can view them at <https://eu-west-1.console.aws.amazon.com/states/home?region=eu-west-1#/statemachines>
 
-You can also use the `DescribeExecution` integration endpoint to see the progress of an execution
+You can also use the `DescribeExecution` integration endpoint to see the progress of an execution use the POST `/status`
 
 Click `Test` and enter a Request Body
 
 ```json
 {
-   "executionArn": "arn:aws:states:eu-west-1:0000000000:execution:Iw102StarterMachineStepFunctionsStateMachine-C8ZYXzFB9SCO:8ff3bddb-4864-4881-943e-2f0055120652"
+   "executionArn": "arn:aws:states:eu-west-1:386676700885:execution:Iw102StarterMachineStepFunctionsStateMachine-m97rVvc6mLUI:4733c3b4-51b0-4306-9595-00f7dbd2cee2"
 }
 ```
 
@@ -177,14 +185,14 @@ This gives this kind of output
 
 ```json
 {
-  "executionArn": "arn:aws:states:eu-west-1:0000000000:execution:Iw102StarterMachineStepFunctionsStateMachine-C8ZYXzFB9SCO:8ff3bddb-4864-4881-943e-2f0055120652",
+  "executionArn": "arn:aws:states:eu-west-1:0000000000:execution:Iw102StarterMachineStepFunctionsStateMachine-m97rVvc6mLUI:4733c3b4-51b0-4306-9595-00f7dbd2cee2",
   "input": "{\"test1\":\"test2\"}",
-  "name": "8ff3bddb-4864-4881-943e-2f0055120652",
-  "output": "{\"test1\":\"test2\",\"taskresult\":\"Hello 102 Class\"}",
-  "startDate": 1573568204.569,
-  "stateMachineArn": "arn:aws:states:eu-west-1:00000000000:stateMachine:Iw102StarterMachineStepFunctionsStateMachine-C8ZYXzFB9SCO",
+  "name": "4733c3b4-51b0-4306-9595-00f7dbd2cee2",
+  "output": "{\"test1\":\"test2\",\"taskresult\":{\"message\":\"Hello 101 Class undefined\",\"memory\":\"128\",\"functionName\":\"iw-101-stepfunctions-nodejs-dev-hello\",\"invokeId\":\"060e5152-a87a-4c62-a25e-dce3d63d8594\"}}",
+  "startDate": 1575838408.77,
+  "stateMachineArn": "arn:aws:states:eu-west-1:386676700885:stateMachine:Iw102StarterMachineStepFunctionsStateMachine-m97rVvc6mLUI",
   "status": "SUCCEEDED",
-  "stopDate": 1573568214.936
+  "stopDate": 1575838419.119
 }
 ```
 
@@ -230,7 +238,7 @@ Copy the contents of the file : see [./saved-steps/serverless-03-api-keys.yml](.
 And deploy
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 Now we can see that the output generates a key that is needed to call the service, this key is shown each time and only get generated once.
@@ -349,7 +357,7 @@ Copy the contents of the file : see [./saved-steps/serverless-04-callback.yml](.
 And deploy
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 You should see the new state machine <https://eu-west-1.console.aws.amazon.com/states/home?region=eu-west-1#/statemachines>
@@ -453,7 +461,7 @@ First lets set our timeout to be `5 minutes`, to give ourselves more time to wor
 And re-deploy
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 Great, now lets start another execution
@@ -576,7 +584,7 @@ Copy the contents of the file : see [./saved-steps/serverless-05-map.yml](./save
 Then deploy
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 The `Map` type can be seen if you `Edit` the state machine <https://eu-west-1.console.aws.amazon.com/states/home?region=eu-west-1#/statemachines>
@@ -727,7 +735,7 @@ Copy the contents of the file : see [./saved-steps/serverless-06-map.yml](./save
 Then deploy
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 Now lets start a `new execution` with a similar payload as the previous example
@@ -877,7 +885,7 @@ Copy the contents of the file : see [./saved-steps/serverless-07-notification.ym
 Then deploy
 
 ```bash
-make deploy STAGE=dev
+sls deploy --verbose stage=dev
 ```
 
 we should now lets start an execution

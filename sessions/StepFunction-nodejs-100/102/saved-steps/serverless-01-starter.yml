@@ -21,21 +21,6 @@ functions:
 stepFunctions:
   stateMachines:
     iw102StarterMachine:
-      events:
-        - http:
-            path: hello
-            method: GET
-        - http:
-            path: action/start
-            method: POST
-        - http:
-            path: action/status
-            method: POST
-            action: DescribeExecution
-        - http:
-            path: action/stop
-            method: POST
-            action: StopExecution
       definition:
         Comment: "A sample step function to say hello"
         StartAt: FirstState
